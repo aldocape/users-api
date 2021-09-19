@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/bulma.min.css" />
+    <title>API Express</title>
+  </head>
+
+  <style>
+    nav {
+      width: 90%;
+      margin: 20px auto;
+    }
+    .w-100,
+    .w-1000 {
+      width: 100%;
+      margin: 0;
+    }
+    .w-100:nth-child(even) {
+      background: hsl(0, 0%, 93%);
+    }
+    .w-100:nth-child(odd) {
+      background: hsl(0, 0%, 98%);
+    }
+    .columns:last-child {
+      margin-bottom: 0;
+    }
+    .column {
+      padding: 0.5%;
+    }
+  </style>
+  <body onload="initApp();">
+    <nav>
+      <h1 class="title mt-3">Usuarios IUPA</h1>
+    </nav>
+
+    <nav class="panel" id="login-form">
+      <p class="panel-heading">Login</p>
+
+      <div class="panel-block">
+        <form>
+          <div class="block">
+            <label class="label" for="user_name">Nombre de usuario: </label>
+            <input
+              type="text"
+              class="input is-primary is-small"
+              id="user_name"
+              placeholder="Nombre de usuario"
+            />
+            <!-- <p id="inputNameHelp" class="help is-hidden is-danger"></p> -->
+            <label class="label mt-4" for="password">Contraseña: </label>
+            <input
+              type="password"
+              class="input is-primary is-small"
+              id="password"
+            />
+            <!-- <p id="inputAgeHelp" class="help is-hidden is-danger"></p> -->
+            <button
+              type="button"
+              class="button is-small mt-5 is-success"
+              id="loginButton"
+            >
+              Iniciar sesión
+            </button>
+          </div>
+        </form>
+      </div>
+    </nav>
+
+    <nav class="panel p-3" id="contentUser"></nav>
+
+    <nav class="panel">
+      <p class="panel-heading">Listado de usuarios</p>
+      <div class="panel-block is-flex-wrap-wrap" id="contentTable">
+        <div class="columns w-1000">
+          <div class="column txtName">Nombre</div>
+          <div class="column nmbAge">Edad</div>
+          <div class="column txtUsername">Username</div>
+          <div class="column"></div>
+        </div>
+      </div>
+    </nav>
+
+    <nav class="panel" id="form-create">
+      <p class="panel-heading">Agregar nuevo usuario</p>
+      <div class="panel-block">
+        <form id="createUserForm">
+          <div class="block">
+            <div class="columns">
+              <div class="column m-5">
+                <label class="label" for="userName">Nombre: </label>
+                <input
+                  type="text"
+                  class="input is-primary is-small"
+                  id="userName"
+                  placeholder="Nombre"
+                />
+                <p id="inputNameHelp" class="help is-hidden is-danger"></p>
+                <label class="label mt-4" for="userAge">Edad: </label>
+                <input
+                  type="number"
+                  class="input is-primary is-small"
+                  id="userAge"
+                  placeholder="Edad"
+                  min="18"
+                  max="120"
+                />
+                <p id="inputAgeHelp" class="help is-hidden is-danger"></p>
+              </div>
+              <div class="column m-5">
+                <label class="label" for="usrname">Username:</label>
+                <input
+                  type="text"
+                  class="input is-primary is-small"
+                  id="usrname"
+                />
+
+                <label class="label mt-4" for="passwrd">Password:</label>
+                <input
+                  type="password"
+                  class="input is-primary is-small"
+                  id="passwrd"
+                />
+              </div>
+            </div>
+            <button
+              type="button"
+              class="button is-small ml-3 is-success"
+              id="createButton"
+            >
+              Crear
+            </button>
+          </div>
+        </form>
+      </div>
+    </nav>
+
+    <nav class="panel mt-6" style="display: none" id="form-update">
+      <p class="panel-heading">
+        Actualizar usuario # <span id="user-id"></span>
+      </p>
+      <div class="panel-block">
+        <form id="updateUserForm">
+          <div class="block">
+            <div class="columns">
+              <div class="column m-5">
+                <label class="label" for="userName">Nombre: </label>
+                <input
+                  type="text"
+                  class="input is-primary is-small"
+                  id="userNameUpd"
+                  placeholder="Nombre"
+                />
+                <p id="inputNameUpdHelp" class="help is-hidden is-danger"></p>
+                <label class="label mt-4" for="userAge">Edad: </label>
+                <input
+                  type="number"
+                  class="input is-primary is-small"
+                  id="userAgeUpd"
+                  placeholder="Edad"
+                  min="18"
+                  max="120"
+                />
+                <p id="inputAgeUpdHelp" class="help is-hidden is-danger"></p>
+              </div>
+              <div class="column m-5">
+                <label class="label" for="usrnameUpd">Username:</label>
+                <input
+                  type="text"
+                  class="input is-primary is-small"
+                  id="usrnameUpd"
+                />
+
+                <label class="label mt-4" for="passwrdUpd">Password:</label>
+                <input
+                  type="password"
+                  class="input is-primary is-small"
+                  id="passwrdUpd"
+                />
+              </div>
+            </div>
+            <button
+              type="button"
+              onclick="saveUpdateUser()"
+              class="button is-small ml-3 mr-1 is-success"
+            >
+              Actualizar
+            </button>
+
+            <button
+              type="button"
+              onclick="cancelUpdate()"
+              class="button is-small is-danger"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </nav>
+
+    <template id="contentRow">
+      <div class="columns row w-100">
+        <div class="column txtName pt-2"></div>
+        <div class="column nmbAge pt-2"></div>
+        <div class="column txtUsername pt-2"></div>
+        <div class="column has-text-right">
+          <button class="button is-info mr-1 is-small btnUpdate">Editar</button>
+          <button class="button is-danger is-small btnDelete">Eliminar</button>
+        </div>
+      </div>
+    </template>
+
+    <template id="contentUserRow">
+      <div class="block usrInfo"></div>
+      <button
+        type="button"
+        class="button is-small is-warning"
+        id="logoutButton"
+      >
+        Cerrar sesión
+      </button>
+    </template>
+
+    <script src="app.js"></script>
+    <script src="login.js"></script>
+  </body>
+</html>
