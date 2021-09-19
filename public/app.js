@@ -6,6 +6,8 @@ const row = document.getElementById("contentRow").content;
 const contentUser = document.getElementById("contentUser");
 const userRow = document.getElementById("contentUserRow").content;
 
+const panelUsuarios = document.getElementById("panel_usuarios");
+
 const inputName = document.getElementById("userName");
 const inputAge = document.getElementById("userAge");
 
@@ -200,6 +202,9 @@ async function api(endpoint, method, body = undefined) {
  */
 
 async function initApp() {
+  // el panel central no lo muestro hasta estar seguro que hay usuarios para mostrar
+  panelUsuarios.classList.add("is-hidden");
+
   if (localStorage.getItem("token")) {
     // Si la app está iniciando y el token está guardado en local storage, debo "limpiar" esa información porque puede ser un token caducado y nunca me va a dejar acceder
 
@@ -208,6 +213,8 @@ async function initApp() {
   } else {
     // Usuario no logueado, oculto el contenedor que muestra bienvenida al usuario y botón de logout
     contentUser.style.display = "none";
+    // oculto formulario para cargar nuevo usuario
+    createUserFormContent.style.display = "none";
   }
 
   await loadUsers();
@@ -216,6 +223,9 @@ async function initApp() {
 async function loadUsers() {
   //   contentTable.innerHTML = "";
   if (localStorage.getItem("token")) {
+    // Muestro formulario de carga de nuevo usuario
+    createUserFormContent.style.display = "";
+
     while (contentTable.children.length > 1) {
       //// Iteración para eliminar todos los elementos, menos el 1º que es la fila cabecera
       let item = contentTable.lastElementChild;
@@ -224,9 +234,12 @@ async function loadUsers() {
 
     const data = await api("/users", "get");
 
-    data.forEach(({ name, age, username, id }) =>
-      addRow(name, age, username, id)
-    );
+    if (data.length > 0) {
+      panelUsuarios.classList.remove("is-hidden");
+      data.forEach(({ name, age, username, id }) =>
+        addRow(name, age, username, id)
+      );
+    }
   }
 }
 
